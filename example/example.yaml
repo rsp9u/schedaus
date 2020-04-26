@@ -46,7 +46,6 @@ task:
     actual:
       start: 2020/4/17
       progress: 20%
-    assignee: bob
   - name: task4
     text: "Task 4"
     plan:
