@@ -3,7 +3,7 @@ import logging
 from traceback import format_exc
 from flask import Flask, make_response, send_from_directory
 from werkzeug.exceptions import InternalServerError
-from schedaus.base64url import decode_base64url
+from schedaus.utils import decode_base64url
 from schedaus.parse import Parser
 from schedaus.proc import Resolver
 from schedaus.render import render

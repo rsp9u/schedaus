@@ -1,7 +1,12 @@
+import base64
 from string import hexdigits
 from datetime import datetime, date, timedelta
 
 from schedaus.svg_colors import svg_colors
+
+
+def decode_base64url(s):
+    return base64.urlsafe_b64decode(s + '=' * ((4 - len(s) & 3) & 3)).decode()
 
 
 def strpdate(s, fmt="%Y/%m/%d"):
