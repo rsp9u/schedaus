@@ -51,6 +51,9 @@ task:
     plan:
       start: task2's end
       period: 6 days
+    actual:
+      start: 2020/4/14
+      progress: 0.8
   - name: task5
     text: "Task 5"
     plan:

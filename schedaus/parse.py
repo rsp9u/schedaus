@@ -2,7 +2,7 @@ import re
 import yaml
 from collections import defaultdict
 
-from schedaus.utils import strpdate, is_valid_date, is_valid_color
+from schedaus.utils import strpdate, is_float, is_valid_date, is_valid_color
 
 
 class ParserContext:
@@ -141,7 +141,7 @@ class Parser:
         _parse_schedule(line, "actual")
         if line.startswith(f"  .-"):
             value = line[4:].strip()
-            if value.endswith("%"):
+            if value.endswith("%") or len(value.split("/")) == 2 or is_float(value):
                 self.context.schedule["actual"]["progress"] = value
 
         if line.startswith(f"  @"):

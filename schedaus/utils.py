@@ -56,6 +56,14 @@ def calc_business_days(start, end, holidays):
     return days
 
 
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def is_valid_date(s):
     try:
         strpdate(s)

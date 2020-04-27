@@ -72,12 +72,14 @@ task3: "Task 3"
 task4: "Task 4"
   >> task2's end
   >= 6 days
+  .> 2020/4/14
+  .- 0.8
 
 task5: "Task 5"
   >> 2020/4/9
   >= 10 days
   .> 2020/4/16
-  .- 30%
+  .- 1/3
 ```
 
 ### yaml format
@@ -135,6 +137,9 @@ task:
     plan:
       start: task2's end
       period: 6 days
+    actual:
+      start: 2020/4/14
+      progress: 0.8
   - name: task5
     text: "Task 5"
     plan:
@@ -142,7 +147,7 @@ task:
       period: 10 days
     actual:
       start: 2020/4/16
-      progress: 30%
+      progress: 1/3
 milestone:
   - name: milestone1
     text: "Review"

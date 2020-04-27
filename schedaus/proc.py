@@ -5,7 +5,7 @@ from pprint import pformat
 
 from graph import Graph
 from schedaus.model import Calendar, Task, Milestone, DependencyPath, Group
-from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days
+from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days, is_float
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +164,7 @@ class Resolver:
         return p
 
     def _resolve_date(self, project, schedules, name):
+        print(f"resolve date {name}")
         t = schedules[name]
         plan = t.get("plan")
         if plan is None:
@@ -234,6 +235,15 @@ class Resolver:
             progress = actual["progress"]
             if isinstance(progress, str) and progress.endswith("%"):
                 progress = float(progress.strip("%")) / 100.0
+            elif isinstance(progress, str) and len(progress.split("/")) == 2:
+                sp = progress.split("/")
+                progress = float(sp[0]) / float(sp[1])
+            elif isinstance(progress, str) and is_float(progress):
+                progress = float(progress)
+            elif isinstance(progress, float):
+                pass
+            else:
+                return
             dates = set([start + timedelta(i) for i in range((today - start).days)])
             dates = dates - set(project["closed_dates"])
             days = math.ceil(len(dates) / progress)

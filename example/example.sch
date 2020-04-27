@@ -44,9 +44,11 @@ task3: "Task 3"
 task4: "Task 4"
   >> task2's end
   >= 6 days
+  .> 2020/4/14
+  .- 0.8
 
 task5: "Task 5"
   >> 2020/4/9
   >= 10 days
   .> 2020/4/16
-  .- 30%
+  .- 1/3
