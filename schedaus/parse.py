@@ -41,7 +41,7 @@ class Parser:
             self.dispatch(line)
 
         self.output["task"] = [dict(t) for t in self.output["task"]]
-        self.output["milestone"] = [dict(t) for t in self.output["milestone"]]
+        self.output["milestone"] = [dict(m) for m in self.output["milestone"]]
 
     def dispatch(self, line):
         patterns = [
@@ -100,11 +100,9 @@ class Parser:
     def task(self, line, m, kind="task"):
         task = defaultdict(dict)
         task["name"] = m.group(1)
+        task["kind"] = kind
         if m.group(3):
             task["text"] = m.group(3).strip("'\"")
-        self.output[kind].append(task)
-        if self.context.group is not None:
-            self.context.group["member"].append(task["name"])
         self.context.schedule = task
 
     def milestone(self, line, m):
@@ -139,6 +137,7 @@ class Parser:
 
         _parse_schedule(line, "plan")
         _parse_schedule(line, "actual")
+
         if line.startswith(f"  .-"):
             value = line[4:].strip()
             if value.endswith("%") or len(value.split("/")) == 2 or is_float(value):
@@ -147,6 +146,31 @@ class Parser:
         if line.startswith(f"  @"):
             value = line[3:].strip()
             self.context.schedule["assignee"] = value
+
+        self._register_schedule()
+
+    def _register_schedule(self):
+        sc = self.context.schedule
+        kind = sc["kind"]
+
+        if sc["name"] in [o["name"] for o in self.output[kind]]:
+            # already registered
+            return
+
+        if kind == "task":
+            if "plan" not in sc:
+                return
+            if "start" not in sc["plan"]:
+                return
+            if "end" not in sc["plan"] and "period" not in sc["plan"]:
+                return
+        else:
+            if "plan" not in sc:
+                return
+
+        self.output[kind].append(sc)
+        if self.context.group is not None:
+            self.context.group["member"].append(sc["name"])
 
 
 if __name__ == "__main__":
