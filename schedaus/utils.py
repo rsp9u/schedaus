@@ -63,6 +63,13 @@ def calc_business_days(start, end, holidays):
     return days
 
 
+def len_multibyte(s):
+    text_len = 0
+    for c in s:
+        text_len += 1 if c.isascii() else 2
+    return text_len
+
+
 def is_float(s):
     try:
         float(s)

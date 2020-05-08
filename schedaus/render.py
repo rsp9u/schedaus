@@ -3,7 +3,7 @@ from traceback import format_exc
 
 import svgwrite
 from schedaus.model import Task
-from schedaus.utils import get_prefix_space_num
+from schedaus.utils import get_prefix_space_num, len_multibyte
 
 
 w = 16
@@ -303,7 +303,7 @@ def group_to_svg(calendar, group):
     mw = w * ((calendar.end - calendar.start).days + 1)
     objs = []
     d = svgwrite.Drawing()
-    text_size = len(group.text) * 8 + 10
+    text_size = len_multibyte(group.text) * 8 + 10
     line_opts = {"style": "stroke:black; stroke-width=1.0"}
     text_opts = {"font_family": "Serif", "font_size": 13, "dominant_baseline": "middle", "text_anchor": "middle"}
     objs.append(d.line((0, h/3*1), (mw/2 - text_size/2, h/3*1), **line_opts))
