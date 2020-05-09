@@ -1,7 +1,9 @@
 from datetime import timedelta
+from traceback import format_exc
 
 import svgwrite
 from schedaus.model import Task
+from schedaus.utils import get_prefix_space_num
 
 
 w = 16
@@ -15,6 +17,52 @@ text_common_opts = {
 line_common_opts = {
     "style": "stroke:#C0C0C0;stroke-width=1.0",
 }
+
+
+def add_error(drawing):
+    mw = int(drawing.attribs["width"][0:-2])
+    mh = int(drawing.attribs["height"][0:-2])
+    print(mw, mh)
+    text, height = _generate_error_text(mh)
+    drawing.add(text)
+    drawing.attribs["height"] = f"{height}px"
+    if mw < 640:
+        drawing.attribs["width"] = "640px"
+
+
+def draw_error():
+    text, height = _generate_error_text()
+    drawing = svgwrite.Drawing()
+    drawing.add(text)
+    drawing.attribs["width"] = "640px"
+    drawing.attribs["height"] = f"{height}px"
+    return drawing
+
+
+def _generate_error_text(mh=0):
+    d = svgwrite.Drawing()
+
+    text_opts = {
+        "font_size": "14",
+        "font_weight": "bold",
+        "fill": "red",
+    }
+    text_opts.update(text_common_opts)
+    text = None
+    dy_per = 16
+    dy = dy_per
+    lines = format_exc().splitlines()
+    for line in lines:
+        if text is None:
+            text = d.text(line, (0, mh+4), **text_opts)
+        else:
+            spaces = get_prefix_space_num(line)
+            text.add(d.tspan(line, (spaces*8, mh+4), dy=[dy]))
+            dy += dy_per
+
+    height = mh + 4 + len(lines) * dy_per
+
+    return text, height
 
 
 def render(data):
@@ -57,7 +105,7 @@ def render(data):
     d.attribs["width"] = f"{mw}px"
     d.attribs["height"] = f"{mh}px"
 
-    return d.tostring()
+    return d
 
 
 def _render_schedule(schedule, y, data):
