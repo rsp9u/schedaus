@@ -9,6 +9,7 @@ class Calendar:
     end: date
     today: date
     closed: List[date]
+    scale: str
 
 
 @dataclass

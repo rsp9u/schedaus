@@ -16,6 +16,7 @@ class Parser:
     re_project_period = re.compile("^(p|P)roject lasts (.*) to (.*)$")
     re_holiday = re.compile("^(.*) (are|is) closed$")
     re_today = re.compile("^today is (.*)$")
+    re_scale = re.compile("^scale is (.*)$")
     re_color = re.compile("^(tasks?|milestones?|paths?) (are|is) colored (.*)$")
     re_group = re.compile("^(--|==).*")
     re_task = re.compile("^([^!\\s:]+)(\\s*:\\s*)?(.*)$")
@@ -49,6 +50,7 @@ class Parser:
             "project_period",
             "holiday",
             "today",
+            "scale",
             "color",
             "group",
             "task",
@@ -83,6 +85,9 @@ class Parser:
             self.output["project"]["today"] = m.group(1)
         except ValueError:
             pass
+
+    def scale(self, line, m):
+        self.output["project"]["scale"] = m.group(1)
 
     def color(self, line, m):
         if all([is_valid_color(color) for color in m.group(3).split("/")]):

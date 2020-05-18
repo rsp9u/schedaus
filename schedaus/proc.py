@@ -41,7 +41,8 @@ class Resolver:
             except ValueError:
                 closed.extend(weekday_to_dates(c, start, end))
         project["closed_dates"] = closed
-        ret["calendar"] = Calendar(start, end, strpdate(project["today"]), closed)
+        project["scale"] = project.get("scale", "daily")
+        ret["calendar"] = Calendar(start, end, strpdate(project["today"]), closed, project["scale"])
 
         self.colors = self._get_colors(data_dict.get("style"))
 

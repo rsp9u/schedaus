@@ -5,7 +5,7 @@ from flask import Flask, request, make_response, send_from_directory
 from schedaus.utils import decode_base64url
 from schedaus.parse import Parser
 from schedaus.proc import Resolver
-from schedaus.render import render, add_error, draw_error
+from schedaus.render import Renderer
 from schedaus.cache import ResponseCache
 logging.basicConfig(format="[%(asctime)-15s] %(name)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -34,10 +34,11 @@ def resolve_render_response(data_yaml):
     global response_cache
 
     data = Resolver().resolve(data_yaml)
-    svg = render(data)
+    renderer = Renderer()
+    renderer.render(data)
     if request.args.get('client_id'):
-        response_cache.set(request.args.get('client_id'), svg)
-    resp = make_response(svg.tostring())
+        response_cache.set(request.args.get('client_id'), renderer.get_svg())
+    resp = make_response(renderer.get_svg().tostring())
     add_common_header(resp)
     return resp
 
@@ -57,11 +58,13 @@ def log_exception(exc):
     client_id = request.args.get('client_id')
     if client_id and response_cache.get(client_id):
         svg = response_cache.get(client_id).copy()
-        add_error(svg)
+        renderer = Renderer(svg)
+        renderer.add_error()
     else:
-        svg = draw_error()
+        renderer = Renderer()
+        renderer.draw_error()
 
-    resp = make_response(svg.tostring())
+    resp = make_response(renderer.get_svg().tostring())
     add_common_header(resp)
     return resp
 
