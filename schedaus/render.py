@@ -304,11 +304,11 @@ def group_to_svg(calendar, group):
     objs = []
     d = svgwrite.Drawing()
     text_size = len_multibyte(group.text) * 8 + 10
-    line_opts = {"style": "stroke:black; stroke-width=1.0"}
+    line_opts = {"style": "stroke:dimgray; stroke-width=1.0"}
     text_opts = {"font_family": "Serif", "font_size": 13, "dominant_baseline": "middle", "text_anchor": "middle"}
-    objs.append(d.line((0, h/3*1), (mw/2 - text_size/2, h/3*1), **line_opts))
-    objs.append(d.line((0, h/3*2), (mw/2 - text_size/2, h/3*2), **line_opts))
+    objs.append(d.line((0, h/5*2), (mw/2 - text_size/2, h/5*2), **line_opts))
+    objs.append(d.line((0, h/5*3), (mw/2 - text_size/2, h/5*3), **line_opts))
     objs.append(d.text(group.text, (mw/2, h/2), **text_opts))
-    objs.append(d.line((mw/2 + text_size/2, h/3*1), (mw, h/3*1), **line_opts))
-    objs.append(d.line((mw/2 + text_size/2, h/3*2), (mw, h/3*2), **line_opts))
+    objs.append(d.line((mw/2 + text_size/2, h/5*2), (mw, h/5*2), **line_opts))
+    objs.append(d.line((mw/2 + text_size/2, h/5*3), (mw, h/5*3), **line_opts))
     return objs
