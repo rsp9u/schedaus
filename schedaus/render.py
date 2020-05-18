@@ -3,7 +3,7 @@ from traceback import format_exc
 
 import svgwrite
 from schedaus.model import Task
-from schedaus.utils import get_prefix_space_num, len_multibyte
+from schedaus.utils import get_prefix_space_num, len_multibyte, calc_remain_days_in_month
 
 
 w = 16
@@ -147,7 +147,11 @@ def calendar_to_svg(calendar, data):
     date = calendar.start
     while date <= calendar.end:
         if date.month != prev_month:
-            objs.append({"z": 5, "o": d.text("{}/{}".format(date.year, date.month), (x+1, ph), **text_month_opts)})
+            if calc_remain_days_in_month(date) >= 3:
+                month_text = "{}/{}".format(date.year, date.month)
+            else:
+                month_text = "{}".format(date.month)
+            objs.append({"z": 5, "o": d.text(month_text, (x+1, ph), **text_month_opts)})
             objs.append({"z": 10, "o": d.line((x, 0), (x, mh), **line_common_opts)})
             prev_month = date.month
         objs.append({"z": 5, "o": d.text(date.strftime("%a")[0:2], (x+w/2, h+ph), **text_day_opts)})

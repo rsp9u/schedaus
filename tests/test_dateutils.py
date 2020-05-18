@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days
+from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days, calc_remain_days_in_month
 
 
 class TestDateutils(unittest.TestCase):
@@ -69,3 +69,15 @@ class TestDateutils(unittest.TestCase):
             with self.subTest(input=case[0:3], expect=case[3]):
                 actual = calc_date_in_business_days(*case[0:3])
                 self.assertEqual(actual, case[3])
+
+    def test_calc_remain_days_in_month(self):
+        cases = [
+            (date(2020, 4, 1), 30),
+            (date(2020, 4, 30), 1),
+            (date(2020, 2, 28), 2),
+        ]
+
+        for case in cases:
+            with self.subTest(input=case[0], expect=case[1]):
+                actual = calc_remain_days_in_month(case[0])
+                self.assertEqual(actual, case[1])

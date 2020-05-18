@@ -63,6 +63,15 @@ def calc_business_days(start, end, holidays):
     return days
 
 
+def calc_remain_days_in_month(start):
+    n = 0
+    d = date(start.year, start.month, start.day)
+    while d.month == start.month:
+        n += 1
+        d += timedelta(days=1)
+    return n
+
+
 def len_multibyte(s):
     text_len = 0
     for c in s:
