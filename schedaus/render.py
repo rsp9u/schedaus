@@ -351,7 +351,6 @@ class Renderer:
     def group_to_svg(self, calendar, group):
         objs = []
         text_size = len_multibyte(group.text) * 8 + 10
-        text_size = len(group.text) * 8 + 10
         line_opts = {"style": "stroke:dimgray; stroke-width=1.0"}
         text_opts = {"font_family": "Serif", "font_size": 13, "dominant_baseline": "middle", "text_anchor": "middle"}
         objs.append(self.dwg.line((0, self.hpl/5*2), (self.mw/2 - text_size/2, self.hpl/5*2), **line_opts))
