@@ -15,6 +15,7 @@ class ParserContext:
 class Parser:
     re_comment = re.compile("^#.*$")
     re_project_period = re.compile("^(p|P)roject lasts (.*) to (.*)$")
+    re_ranged_holiday = re.compile("^(.*) to (.*) (are|is) closed$")
     re_holiday = re.compile("^(.*) (are|is) closed$")
     re_today = re.compile("^today is (.*)$")
     re_scale = re.compile("^scale is (.*)$")
@@ -49,6 +50,7 @@ class Parser:
         patterns = [
             "comment",
             "project_period",
+            "ranged_holiday",
             "holiday",
             "today",
             "scale",
@@ -77,21 +79,20 @@ class Parser:
         except ValueError:
             pass
 
+    def ranged_holiday(self, line, m):
+        try:
+            d = strpdate(m.group(1))
+            end = strpdate(m.group(2)) + timedelta(days=1)
+            if d > end:
+                return
+            while d != end:
+                self.output["project"]["closed"].append(d.strftime("%Y/%m/%d"))
+                d += timedelta(days=1)
+        except ValueError:
+            pass
+
     def holiday(self, line, m):
-        if " to " in m.group(1):
-            try:
-                sp = m.group(1).split(" ")
-                d = strpdate(sp[0])
-                end = strpdate(sp[2]) + timedelta(days=1)
-                if d > end:
-                    return
-                while d != end:
-                    self.output["project"]["closed"].append(d.strftime("%Y/%m/%d"))
-                    d += timedelta(days=1)
-            except ValueError:
-                pass
-        else:
-            self.output["project"]["closed"].append(m.group(1))
+        self.output["project"]["closed"].append(m.group(1))
 
     def today(self, line, m):
         try:
