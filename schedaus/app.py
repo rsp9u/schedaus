@@ -1,7 +1,10 @@
 import os
+import io
 import logging
 from traceback import format_exc
-from flask import Flask, request, make_response, send_from_directory
+
+import cairosvg
+from flask import Flask, request, make_response, send_from_directory, send_file
 from schedaus.utils import decode_base64url
 from schedaus.parse import Parser
 from schedaus.proc import Resolver
@@ -20,17 +23,29 @@ def sch_to_svg(b64_data):
     logger.debug(data_sch)
     p = Parser()
     p.parse(data_sch)
-    return resolve_render_response(p.output)
+    renderer = resolve_render(p.output)
+    return make_svg_response(renderer.get_svg().tostring())
 
 
 @app.route('/yaml/svg/<b64_data>')
 def yaml_to_svg(b64_data):
     data_yaml = decode_base64url(b64_data)
     logger.debug(data_yaml)
-    return resolve_render_response(data_yaml)
+    renderer = resolve_render(data_yaml)
+    return make_svg_response(renderer.get_svg().tostring())
 
 
-def resolve_render_response(data_yaml):
+@app.route('/sch/png/<b64_data>')
+def sch_to_png(b64_data):
+    data_sch = decode_base64url(b64_data)
+    logger.debug(data_sch)
+    p = Parser()
+    p.parse(data_sch)
+    renderer = resolve_render(p.output)
+    return make_png_response(renderer.get_svg().tostring())
+
+
+def resolve_render(data_yaml):
     global response_cache
 
     data = Resolver().resolve(data_yaml)
@@ -38,9 +53,21 @@ def resolve_render_response(data_yaml):
     renderer.render(data)
     if request.args.get('client_id'):
         response_cache.set(request.args.get('client_id'), renderer.get_svg())
-    resp = make_response(renderer.get_svg().tostring())
+
+    return renderer
+
+
+def make_svg_response(svg_text):
+    resp = make_response(svg_text)
     add_common_header(resp)
     return resp
+
+
+def make_png_response(svg_text):
+    byteio = io.BytesIO()
+    cairosvg.svg2png(bytestring=svg_text.encode(), write_to=byteio)
+    byteio.seek(0)
+    return send_file(byteio, attachment_filename='schedaus.png', mimetype='image/png')
 
 
 @app.route('/favicon.ico')

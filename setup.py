@@ -12,5 +12,6 @@ setup(
         "flask",
         "svgwrite",
         "graph-theory",
+        "cairosvg",
     ],
 )

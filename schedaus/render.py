@@ -9,6 +9,7 @@ from schedaus.utils import get_prefix_space_num, len_multibyte, calc_remain_days
 text_common_opts = {
     "font_family": "Serif",
     "dominant_baseline": "hanging",
+    "alignment_baseline": "hanging",
 }
 
 line_common_opts = {
@@ -145,6 +146,7 @@ class Renderer:
         self.mh = (self.hpl * 3) + (self.hpl * 2 * (len(data["schedules"]) + len(data["groups"])))
         self.dwg.attribs["width"] = f"{self.mw}px"
         self.dwg.attribs["height"] = f"{self.mh}px"
+        self.dwg.add(self.dwg.rect((0, 0), (self.mw, self.mh), fill="#FFFFFF"))
 
         objs = []
         prev_month = None
@@ -252,6 +254,7 @@ class Renderer:
                     "font_size": 10,
                     "font_weight": "bold",
                     "dominant-baseline": "middle",
+                    "alignment_baseline": "middle",
                 }
                 text = self.dwg.text(task.actual_progress, xy, **text_opts)
                 objs.append({"z": 20, "o": text})
@@ -352,7 +355,13 @@ class Renderer:
         objs = []
         text_size = len_multibyte(group.text) * 8 + 10
         line_opts = {"style": "stroke:dimgray; stroke-width=1.0"}
-        text_opts = {"font_family": "Serif", "font_size": 13, "dominant_baseline": "middle", "text_anchor": "middle"}
+        text_opts = {
+            "font_family": "Serif",
+            "font_size": 13,
+            "dominant_baseline": "middle",
+            "alignment_baseline": "middle",
+            "text_anchor": "middle"
+        }
         objs.append(self.dwg.line((0, self.hpl/5*2), (self.mw/2 - text_size/2, self.hpl/5*2), **line_opts))
         objs.append(self.dwg.line((0, self.hpl/5*3), (self.mw/2 - text_size/2, self.hpl/5*3), **line_opts))
         objs.append(self.dwg.text(group.text, (self.mw/2, self.hpl/2), **text_opts))
