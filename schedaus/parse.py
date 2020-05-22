@@ -1,5 +1,6 @@
 import re
 import yaml
+from datetime import timedelta
 from collections import defaultdict
 
 from schedaus.utils import strpdate, is_float, is_valid_date, is_valid_color
@@ -77,7 +78,20 @@ class Parser:
             pass
 
     def holiday(self, line, m):
-        self.output["project"]["closed"].append(m.group(1))
+        if " to " in m.group(1):
+            try:
+                sp = m.group(1).split(" ")
+                d = strpdate(sp[0])
+                end = strpdate(sp[2]) + timedelta(days=1)
+                if d > end:
+                    return
+                while d != end:
+                    self.output["project"]["closed"].append(d.strftime("%Y/%m/%d"))
+                    d += timedelta(days=1)
+            except ValueError:
+                pass
+        else:
+            self.output["project"]["closed"].append(m.group(1))
 
     def today(self, line, m):
         try:
