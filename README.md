@@ -20,6 +20,9 @@ vi gantt.yaml
 curl http://localhost:5000/yaml/svg/$(cat gantt.yaml | base64 -w0 | tr / _ | tr + - | tr -d '=')
 ```
 
+### Configurations
+* SCHEDAUS_PNG_SCALE: The scale for the png image. (default: 1.8)
+
 ## Output image
 ![Output-Image](example/example.svg)
 

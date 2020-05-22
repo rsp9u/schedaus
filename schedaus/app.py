@@ -64,8 +64,9 @@ def make_svg_response(svg_text):
 
 
 def make_png_response(svg_text):
+    scale = float(os.environ.get('SCHEDAUS_PNG_SCALE', '1.8'))
     byteio = io.BytesIO()
-    cairosvg.svg2png(bytestring=svg_text.encode(), write_to=byteio)
+    cairosvg.svg2png(bytestring=svg_text.encode(), write_to=byteio, scale=scale)
     byteio.seek(0)
     return send_file(byteio, attachment_filename='schedaus.png', mimetype='image/png')
 
