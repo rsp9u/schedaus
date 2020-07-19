@@ -1,5 +1,6 @@
 import math
 import logging
+from copy import deepcopy
 from datetime import timedelta
 from pprint import pformat
 
@@ -264,8 +265,8 @@ class Resolver:
             "path": "blue",
         }
         colors = {
-            "task": dict(**default_colors),
-            "milestone": dict(**default_colors),
+            "task": deepcopy(default_colors),
+            "milestone": deepcopy(default_colors),
             "path": default_colors["path"],
         }
 
@@ -275,30 +276,23 @@ class Resolver:
         if style.get("color", {}).get("path"):
             colors["path"] = style["color"]["path"]
         if style.get("color", {}).get("task"):
-            c = style["color"]["task"]
-            cs = c.split("/")
-            if len(cs) >= 1:
-                colors["task"]["plan_fill"] = cs[0]
-            if len(cs) >= 2:
-                colors["task"]["plan_outline"] = cs[1]
-            if len(cs) >= 3:
-                colors["task"]["text"] = cs[2]
-            if len(cs) >= 4:
-                colors["task"]["actual_fill"] = cs[3]
-            if len(cs) >= 5:
-                colors["task"]["actual_outline"] = cs[4]
+            colors["task"].update(self._parse_color_set(style["color"]["task"]))
         if style.get("color", {}).get("milestone"):
-            c = style["color"]["milestone"]
-            cs = c.split("/")
-            if len(cs) >= 1:
-                colors["milestone"]["plan_fill"] = cs[0]
-            if len(cs) >= 2:
-                colors["milestone"]["plan_outline"] = cs[1]
-            if len(cs) >= 3:
-                colors["milestone"]["text"] = cs[2]
-            if len(cs) >= 4:
-                colors["milestone"]["actual_fill"] = cs[3]
-            if len(cs) >= 5:
-                colors["milestone"]["actual_outline"] = cs[4]
+            colors["milestone"].update(self._parse_color_set(style["color"]["milestone"]))
 
         return colors
+
+    def _parse_color_set(self, color_set):
+        ret = {}
+        colors = color_set.split("/")
+        if len(colors) >= 1:
+            ret["plan_fill"] = colors[0]
+        if len(colors) >= 2:
+            ret["plan_outline"] = colors[1]
+        if len(colors) >= 3:
+            ret["text"] = colors[2]
+        if len(colors) >= 4:
+            ret["actual_fill"] = colors[3]
+        if len(colors) >= 5:
+            ret["actual_outline"] = colors[4]
+        return ret

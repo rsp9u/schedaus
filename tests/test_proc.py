@@ -38,6 +38,8 @@ class TestProc(unittest.TestCase):
                 self.assertEqual(sc[name].plan_start, start)
                 self.assertEqual(sc[name].plan_end, end)
 
+
+class TestProcUtils(unittest.TestCase):
     def test_get_colors(self):
         cases = [
             (
@@ -57,6 +59,10 @@ class TestProc(unittest.TestCase):
             (
                 {"task": "green", "milestone": "green"},
                 {"task": {"plan_fill": "green"}, "milestone": {"plan_fill": "green"}}
+            ),
+            (
+                {"task": "green"},
+                {"milestone": {"plan_fill": "yellowgreen"}}
             ),
         ]
 
