@@ -19,30 +19,44 @@ response_cache = ResponseCache()
 
 @app.route('/sch/svg/<b64_data>')
 def sch_to_svg(b64_data):
-    data_sch = decode_base64url(b64_data)
-    logger.debug(data_sch)
-    p = Parser()
-    p.parse(data_sch)
-    renderer = resolve_render(p.output)
-    return make_svg_response(renderer.get_svg().tostring())
-
-
-@app.route('/yaml/svg/<b64_data>')
-def yaml_to_svg(b64_data):
-    data_yaml = decode_base64url(b64_data)
-    logger.debug(data_yaml)
-    renderer = resolve_render(data_yaml)
-    return make_svg_response(renderer.get_svg().tostring())
+    return process_sch(b64_data, output_svg=True)
 
 
 @app.route('/sch/png/<b64_data>')
 def sch_to_png(b64_data):
+    return process_sch(b64_data, output_svg=False)
+
+
+@app.route('/yaml/svg/<b64_data>')
+def yaml_to_svg(b64_data):
+    return process_yaml(b64_data, output_svg=True)
+
+
+@app.route('/yaml/png/<b64_data>')
+def yaml_to_png(b64_data):
+    return process_yaml(b64_data, output_svg=False)
+
+
+def process_sch(b64_data, output_svg=True):
     data_sch = decode_base64url(b64_data)
     logger.debug(data_sch)
     p = Parser()
     p.parse(data_sch)
     renderer = resolve_render(p.output)
-    return make_png_response(renderer.get_svg().tostring())
+    if output_svg:
+        return make_svg_response(renderer.get_svg().tostring())
+    else:
+        return make_png_response(renderer.get_svg().tostring())
+
+
+def process_yaml(b64_data, output_svg):
+    data_yaml = decode_base64url(b64_data)
+    logger.debug(data_yaml)
+    renderer = resolve_render(data_yaml)
+    if output_svg:
+        return make_svg_response(renderer.get_svg().tostring())
+    else:
+        return make_png_response(renderer.get_svg().tostring())
 
 
 def resolve_render(data_yaml):
