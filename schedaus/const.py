@@ -22,6 +22,8 @@ class C(metaclass=MetaConst):
         "path": "blue",
     })
 
+    default_hours_of_day = 8.0
+
     text_common_opts = ImmutableDict({
         "font_family": "Serif",
         "dominant_baseline": "hanging",
