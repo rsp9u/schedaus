@@ -37,3 +37,32 @@ class TestProc(unittest.TestCase):
                 end = date(*plan[1])
                 self.assertEqual(sc[name].plan_start, start)
                 self.assertEqual(sc[name].plan_end, end)
+
+    def test_get_colors(self):
+        cases = [
+            (
+                {"task": "green"},
+                {"task": {"plan_fill": "green"}}
+            ),
+            (
+                {"task": "green/blue/red/black/white"},
+                {"task": {
+                    "plan_fill": "green",
+                    "plan_outline": "blue",
+                    "text": "red",
+                    "actual_fill": "black",
+                    "actual_outline": "white"
+                }}
+            ),
+            (
+                {"task": "green", "milestone": "green"},
+                {"task": {"plan_fill": "green"}, "milestone": {"plan_fill": "green"}}
+            ),
+        ]
+
+        for case in cases:
+            with self.subTest(colors=case[0], expected=case[1]):
+                actual = Resolver()._get_colors({"color": case[0]})
+                for kind, values in case[1].items():
+                    for part, expected_color in values.items():
+                        self.assertEqual(actual[kind][part], expected_color)
