@@ -2,19 +2,9 @@ from datetime import timedelta
 from traceback import format_exc
 
 import svgwrite
+from schedaus.const import C
 from schedaus.model import Task
 from schedaus.utils import get_prefix_space_num, len_multibyte, calc_remain_days_in_month
-
-
-text_common_opts = {
-    "font_family": "Serif",
-    "dominant_baseline": "hanging",
-    "alignment_baseline": "hanging",
-}
-
-line_common_opts = {
-    "style": "stroke:#C0C0C0;stroke-width=1.0",
-}
 
 
 class Renderer:
@@ -25,9 +15,9 @@ class Renderer:
             self.dwg = dwg
 
         # width per day
-        self.wpd = 8
+        self.wpd = C.width_per_day
         # height per line
-        self.hpl = 16
+        self.hpl = C.height_per_line
         # maximum width
         self.mw = -1
         # maximum height
@@ -62,7 +52,7 @@ class Renderer:
             "font_weight": "bold",
             "fill": "red",
         }
-        text_opts.update(text_common_opts)
+        text_opts.update(C.text_common_opts)
         text = None
         dy_per = 16
         dy = dy_per
@@ -154,12 +144,12 @@ class Renderer:
             "font_size": "13",
             "font_weight": "bold",
         }
-        text_month_opts.update(text_common_opts)
+        text_month_opts.update(C.text_common_opts)
         text_day_opts = {
             "font_size": "11",
             "text_anchor": "middle",
         }
-        text_day_opts.update(text_common_opts)
+        text_day_opts.update(C.text_common_opts)
         x = 0
         date = calendar.start
         while date <= calendar.end:
@@ -175,7 +165,7 @@ class Renderer:
                     h = self.mh
                 elif self.scale == "weekly":
                     h = self.hpl
-                objs.append({"z": 10, "o": self.dwg.line((x, 0), (x, h), **line_common_opts)})
+                objs.append({"z": 10, "o": self.dwg.line((x, 0), (x, h), **C.line_common_opts)})
                 # update previous month
                 prev_month = date.month
 
@@ -185,13 +175,13 @@ class Renderer:
                 # draw day text
                 objs.append({"z": 5, "o": self.dwg.text(date.day, (x+self.wpd/2, self.hpl*2+ph), **text_day_opts)})
                 # draw line per day
-                objs.append({"z": 10, "o": self.dwg.line((x, self.hpl*3), (x, self.mh), **line_common_opts)})
+                objs.append({"z": 10, "o": self.dwg.line((x, self.hpl*3), (x, self.mh), **C.line_common_opts)})
             elif self.scale == "weekly":
                 if date.weekday() == 0:
                     # draw day text
                     objs.append({"z": 5, "o": self.dwg.text(date.day, (x+self.wpd/2+2, self.hpl+ph), **text_day_opts)})
                     # draw line per week
-                    objs.append({"z": 10, "o": self.dwg.line((x, self.hpl), (x, self.mh), **line_common_opts)})
+                    objs.append({"z": 10, "o": self.dwg.line((x, self.hpl), (x, self.mh), **C.line_common_opts)})
             x += self.wpd
             date += timedelta(days=1)
 
@@ -204,13 +194,13 @@ class Renderer:
             objs.append({"z": 0, "o": self.dwg.rect(xy, (self.wpd, self.mh-self.hpl), fill="#D0D0D0")})
 
         # Outer frame
-        objs.append({"z": 10, "o": self.dwg.line((self.mw, 0), (self.mw, self.mh), **line_common_opts)})
-        objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*0), (self.mw, self.hpl*0), **line_common_opts)})
+        objs.append({"z": 10, "o": self.dwg.line((self.mw, 0), (self.mw, self.mh), **C.line_common_opts)})
+        objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*0), (self.mw, self.hpl*0), **C.line_common_opts)})
         if self.scale == "daily":
-            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*3), (self.mw, self.hpl*3), **line_common_opts)})
+            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*3), (self.mw, self.hpl*3), **C.line_common_opts)})
         elif self.scale == "weekly":
-            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*1), (self.mw, self.hpl*1), **line_common_opts)})
-            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*2), (self.mw, self.hpl*2), **line_common_opts)})
+            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*1), (self.mw, self.hpl*1), **C.line_common_opts)})
+            objs.append({"z": 10, "o": self.dwg.line((0, self.hpl*2), (self.mw, self.hpl*2), **C.line_common_opts)})
 
         # Today's line
         x = self.wpd * (calendar.today - calendar.start).days
@@ -228,7 +218,7 @@ class Renderer:
         rect = self.dwg.rect(xy, wh, rx=6, ry=6, fill=task.color_plan_fill, stroke=task.color_plan_outline)
         objs.append({"z": 20, "o": rect})
         text_task_opts = {"font_size": "13", "color": task.color_text}
-        text_task_opts.update(text_common_opts)
+        text_task_opts.update(C.text_common_opts)
         text = task.text
         if task.assignee is not None:
             text += f"@{task.assignee}"
@@ -274,7 +264,7 @@ class Renderer:
         path = [(0, 0), (-s, s), (0, s*2), (s, s), (0, 0)]
         m = self.dwg.polyline(path, fill=milestone.color_plan_fill, stroke=milestone.color_plan_outline)
         text_ms_opts = {"font_size": "13", "color": milestone.color_text}
-        text_ms_opts.update(text_common_opts)
+        text_ms_opts.update(C.text_common_opts)
         t = self.dwg.text(milestone.text, (self.hpl/2+2, 2), **text_ms_opts)
         g = self.dwg.g(transform=f"translate({x}, 0)")
         g.add(m)

@@ -1,10 +1,10 @@
 import math
 import logging
-from copy import deepcopy
 from datetime import timedelta
 from pprint import pformat
 
 from graph import Graph
+from schedaus.const import C
 from schedaus.model import Calendar, Task, Milestone, DependencyPath, Group
 from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days, is_float
 
@@ -256,18 +256,10 @@ class Resolver:
             actual["end"] = end_date.strftime("%Y/%m/%d")
 
     def _get_colors(self, style):
-        default_colors = {
-            "plan_fill": "yellowgreen",
-            "plan_outline": "green",
-            "actual_fill": "blueviolet",
-            "actual_outline": "darkviolet",
-            "text": "black",
-            "path": "blue",
-        }
         colors = {
-            "task": deepcopy(default_colors),
-            "milestone": deepcopy(default_colors),
-            "path": default_colors["path"],
+            "task": dict(**C.default_colors),
+            "milestone": dict(**C.default_colors),
+            "path": C.default_colors["path"],
         }
 
         if style is None:
