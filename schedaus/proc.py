@@ -6,17 +6,9 @@ from pprint import pformat
 from graph import Graph
 from schedaus.const import C
 from schedaus.model import Calendar, Task, Milestone, DependencyPath, Group
-from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days, is_float
+from schedaus.utils import strpdate, weekday_to_dates, calc_date_in_business_days
 
 logger = logging.getLogger(__name__)
-
-
-def _normalize_period(period):
-    if isinstance(period, int):
-        return period
-    if isinstance(period, str):
-        return int(period.replace("days", "").strip())
-    raise Exception(f"unsupported type of period: {period}({type(period)})")
 
 
 class Resolver:
@@ -194,8 +186,7 @@ class Resolver:
         if "end" in plan:
             _("end")
         if "period" in plan:
-            days = _normalize_period(plan["period"])
-            end_date = calc_date_in_business_days(strpdate(plan["start"]), days, project["closed_dates"])
+            end_date = calc_date_in_business_days(strpdate(plan["start"]), plan["period"], project["closed_dates"])
             plan["end"] = end_date.strftime("%Y/%m/%d")
 
     def _make_dpath(self, schedules, name):
@@ -228,24 +219,13 @@ class Resolver:
             return
 
         if "period" in actual:
-            days = _normalize_period(actual["period"])
-            end_date = calc_date_in_business_days(strpdate(actual["start"]), days, project["closed_dates"])
+            end_date = calc_date_in_business_days(strpdate(actual["start"]), actual["period"], project["closed_dates"])
             actual["end"] = end_date.strftime("%Y/%m/%d")
 
         if "progress" in actual:
             start = strpdate(actual["start"])
             progress = actual["progress"]
-            if isinstance(progress, str) and progress.endswith("%"):
-                progress = float(progress.strip("%")) / 100.0
-            elif isinstance(progress, str) and len(progress.split("/")) == 2:
-                sp = progress.split("/")
-                progress = float(sp[0]) / float(sp[1])
-            elif isinstance(progress, str) and is_float(progress):
-                progress = float(progress)
-            elif isinstance(progress, float):
-                pass
-            else:
-                return
+
             dates = set([start + timedelta(i) for i in range((today - start).days)])
             dates = dates - set(project["closed_dates"])
             days = math.ceil(len(dates) / progress)

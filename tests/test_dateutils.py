@@ -34,12 +34,11 @@ class TestDateutils(unittest.TestCase):
         end = date(2020, 4, 15)
         cases = [
             ("Monday", start, end, [date(2020, 4, 6), date(2020, 4, 13)]),
-            ("tueseday", start, end, [date(2020, 4, 7), date(2020, 4, 14)]),
-            ("wed", start, end, [date(2020, 4, 1), date(2020, 4, 8), date(2020, 4, 15)]),
-            ("THU", start, end, [date(2020, 4, 2), date(2020, 4, 9)]),
-            ("fr", start, end, [date(2020, 4, 3), date(2020, 4, 10)]),
-            ("SA", start, end, [date(2020, 4, 4), date(2020, 4, 11)]),
-            ("Su", start, end, [date(2020, 4, 5), date(2020, 4, 12)]),
+            ("Tuesday", start, end, [date(2020, 4, 7), date(2020, 4, 14)]),
+            ("Wednesday", start, end, [date(2020, 4, 1), date(2020, 4, 8), date(2020, 4, 15)]),
+            ("Friday", start, end, [date(2020, 4, 3), date(2020, 4, 10)]),
+            ("Saturday", start, end, [date(2020, 4, 4), date(2020, 4, 11)]),
+            ("Sunday", start, end, [date(2020, 4, 5), date(2020, 4, 12)]),
             ("m", start, end, []),
             ("s", start, end, []),
             ("XXX", start, end, []),

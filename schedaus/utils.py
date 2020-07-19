@@ -1,4 +1,5 @@
 import re
+import math
 import base64
 from string import hexdigits
 from datetime import datetime, date, timedelta
@@ -25,10 +26,9 @@ def strpdate(s, fmt="%Y/%m/%d"):
 
 def weekday_to_dates(weekday, start, end):
     dates = []
-    weekday = weekday.lower()[0:2]
     d = date(start.year, start.month, start.day)
     while d != (end + timedelta(days=1)):
-        if d.strftime("%a").lower()[0:2] == weekday:
+        if d.strftime("%A") == weekday:
             dates.append(d)
         d = date(d.year, d.month, d.day)
         d += timedelta(days=1)
@@ -36,6 +36,8 @@ def weekday_to_dates(weekday, start, end):
 
 
 def calc_date_in_business_days(start, days, holidays):
+    days = math.copysign(math.ceil(math.fabs(days)), days)
+
     if days == 0 or days == 1 or days == -1:
         return date(start.year, start.month, start.day)
 

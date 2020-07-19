@@ -1,12 +1,14 @@
 import os
 import io
 import logging
+import yaml
 from traceback import format_exc
 
 import cairosvg
 from flask import Flask, request, make_response, send_from_directory, send_file
 from schedaus.utils import decode_base64url
 from schedaus.parse import Parser
+from schedaus.normalize import Normalizer
 from schedaus.proc import Resolver
 from schedaus.render import Renderer
 from schedaus.cache import ResponseCache
@@ -42,6 +44,8 @@ def process_sch(b64_data, output_svg=True):
     logger.debug(data_sch)
     p = Parser()
     p.parse(data_sch)
+    n = Normalizer()
+    n.normalize(p.output)
     renderer = resolve_render(p.output)
     if output_svg:
         return make_svg_response(renderer.get_svg().tostring())
@@ -52,7 +56,10 @@ def process_sch(b64_data, output_svg=True):
 def process_yaml(b64_data, output_svg):
     data_yaml = decode_base64url(b64_data)
     logger.debug(data_yaml)
-    renderer = resolve_render(data_yaml)
+    data_dict = yaml.safe_load(data_yaml)
+    n = Normalizer()
+    n.normalize(data_dict)
+    renderer = resolve_render(data_dict)
     if output_svg:
         return make_svg_response(renderer.get_svg().tostring())
     else:

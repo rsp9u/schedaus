@@ -2,6 +2,7 @@ import unittest
 import yaml
 from datetime import date
 
+from schedaus.normalize import Normalizer
 from schedaus.proc import Resolver
 from tests.data import example_yaml
 
@@ -9,6 +10,8 @@ from tests.data import example_yaml
 class TestProc(unittest.TestCase):
     def setUp(self):
         d = yaml.safe_load(example_yaml)
+        n = Normalizer()
+        n.normalize(d)
         self.result = Resolver().resolve(d)
 
     def test_schedule_to_drawing(self):
