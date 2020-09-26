@@ -3,6 +3,7 @@ WORKDIR /src
 
 COPY setup.py .
 RUN \
+ apk add --no-cache jpeg-dev cairo-dev &&\
  apk add --no-cache --virtual .builddeps build-base python3-dev jpeg-dev zlib-dev libffi-dev &&\
  pip install -e . &&\
  apk del .builddeps
