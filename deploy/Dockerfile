@@ -2,7 +2,10 @@ FROM python:3.8-alpine
 WORKDIR /src
 
 COPY setup.py .
-RUN pip install -e .
+RUN \
+ apk add --no-cache --virtual .builddeps build-base python3-dev jpeg-dev zlib-dev libffi-dev &&\
+ pip install -e . &&\
+ apk del .builddeps
 COPY schedaus ./schedaus
 RUN python setup.py install
 
